@@ -6,7 +6,7 @@
 % Created by:
 % Computational Physics and Biophysics Group, Jacobs University
 % https://teamwork.jacobs-university.de:8443/confluence/display/CoPandBiG/LaTeX+Poster
-% 
+%
 % Further modified by:
 % Nathaniel Johnston (nathaniel@njohnston.ca)
 %
@@ -59,8 +59,19 @@
 
 \usepackage{booktabs} % Top and bottom rules for tables
 
+% Macros for arrows between images
+% based on http://tex.stackexchange.com/questions/7925/big-arrows-between-images
 %----------------------------------------------------------------------------------------
-%	TITLE SECTION 
+\newcommand*{\vimage}[1]{\vcenter{\hbox{#1}}}
+\newcommand*{\vpointer}[1][\ \triangleright\ ]{\vcenter{\hbox{$#1$}}}
+\usepackage{mathtools} % for xRightarrow
+
+% Tikz stuff for the cool diagrams
+%----------------------------------------------------------------------------------------
+\usetikzlibrary{spy}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
 \title{Finding Eigenvalues using Automatic Differentiation} % Poster title
@@ -92,47 +103,81 @@
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Abstract}
-
-Eigenvalues are ubiquitous in all branches of science and engineering. The dominant eigenvalue algorithm reduces input matrices to almost diagonal and then creates and chases bulges using parameters called shifts. Good parameter choices can allow shrinking of the original problem allowing for a more aggressive deflation on the subproblem. Such deflations greatly improve performance. We apply automatic differentiation tools to achieve frequent deflations.
-
+{
+\small
+Eigenvalues are ubiquitous in all branches of science and engineering. The
+dominant eigenvalue algorithm reduces input matrices to almost diagonal and then
+creates and chases bulges using parameters called shifts. Good parameter choices
+can allow shrinking of the original problem allowing for a more aggressive
+deflation on the subproblem. Such deflations greatly improve performance. We
+apply automatic differentiation tools to achieve frequent deflations.
+}
 \end{block}
 
 %----------------------------------------------------------------------------------------
-%	OBJECTIVES
+%	EXISTING TECHNIQUES
 %----------------------------------------------------------------------------------------
 
+\begin{block}{Existing Techniques}
 
-
-%------------------------------------------------
-
-%----------------------------------------------------------------------------------------
-%	METHODS
-%----------------------------------------------------------------------------------------
-
-
-
-
-%---------------------------------------------------------------------------------------
-\begin{block}{QR Algorithym}
+\vspace{0.5ex}
 \begin{figure}
-\includegraphics[width=0.33\textwidth]{impstep049.png}
-%\caption{Chase to the middle}
-\includegraphics[width=0.33\textwidth]{impstep050.png}
-%\caption{Deflate into spikes}
-\includegraphics[width=.33\textwidth]{impstep002.png}
-%\caption{Construct Blocks}
+$\vimage{\includegraphics[width=0.2\linewidth]{plots/original.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/qr1.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/qr2.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/qrdone.eps}}$
 \end{figure}
-\end{block}
+\vspace{0.5ex}
 
-\begin{block}{Middle Deflation}
+A general matrix is first reduced to Hessenberg~form, then the $Q R$~algorithm
+is used to reduce the sub-diagonal entries to zero (shown above). This exposes
+eigenvalues on the diagonal. The $Q R$~algorithm consists of repeated iterations
+of:
+%
+\begin{align}
+A_n     &\rightarrow Q_n R_n \label{eq:qr} \\
+A_{n+1} &\leftarrow  R_n Q_n = Q_n^{-1} A_n Q_n \label{eq:rq}
+\end{align}
+%
+As written, \eqref{eq:qr} and \eqref{eq:rq} require matrix multiplies which can
+be very large. For this reason, the $Q R$~algorithm is implemented
+\emph{implicitly}. This results in a \emph{bulge} moving from top-left to
+bottom-right:
+
+\vspace{0.5ex}
 \begin{figure}
-\includegraphics[width=0.33\textwidth]{impstep049.png}
-%\caption{Chase to the middle}
-\includegraphics[width=0.33\textwidth]{impstep050.png}
-%\caption{Deflate into spikes}
-\includegraphics[width=.33\textwidth]{impstep002.png}
-%\caption{Construct Blocks}
+$\vimage{\includegraphics[width=0.2\linewidth]{plots/bulge1.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/bulge2.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/bulge3.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/bulgedone.eps}}$
 \end{figure}
+\vspace{0.5ex}
+
+This bulge is seeded with a starting value, a \emph{shift}. A second bulge can
+be started from the bottom right. When bulges are chased from each side, they
+meet in the middle. We can \emph{inflate} this bulge using a Schur decomposition
+to form \emph{spikes}. When one of these \emph{spike} values is sufficiently
+close to zero, the problem can be subdivided into the top-left and bottom-right
+halves, exponentially reducing computation time for the eigenvalues. This is
+shown below.
+
+\vspace{0.5ex}
+\begin{figure}
+$\vimage{\includegraphics[width=0.2\linewidth]{plots/bulges1.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/bulges2.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/bulgesspiked.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots/bulgesdeflated.eps}}$
+\end{figure}
+\vspace{0.5ex}
 
 \end{block}
 \end{column} % End of the first column
@@ -146,19 +191,41 @@ Eigenvalues are ubiquitous in all branches of science and engineering. The domin
 \begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
 %----------------------------------------------------------------------------------------
-%	MATERIALS
+%	MOTIVATION: FREQUENT DEFLATIONS
 %----------------------------------------------------------------------------------------
-\begin{alertblock}{Motivation}
+\begin{block}{Motivation: Frequent Deflations}
+In practice, middle deflations are improbable. They occur when the spike tips
+become zero.
 
-We wish to utilize autodifferentation to help optimize the process of finding eigenvalues for deflation
-\begin{itemize}
-\item Use QR algorithm and chase the resulting buldge to the bottom.
-\item Use shure decomposition to obtain a spike with eigenvalue information.
-\item Increase the frequency of these deflations by using automatic differentiation tools to inspire shift choices.
-\item Eventually alter algorithm to a middle deflation for greatly reduced problem size.
-\end{itemize}
+\vspace{0.5ex}
+\begin{figure}
+\begin{tikzpicture}[spy using outlines={circle, magnification=3, connect spies}]
+\node {\includegraphics[width=0.2\linewidth]{plots/bulgesspiked.eps}};
+\spy [ngreen, size=3.5in] on (-0.7,-0.7) in node [left] at (-2in,0);
+\end{tikzpicture}
+\end{figure}
+\vspace{0.5ex}
 
-\end{alertblock}
+We apply \textbf{automatic differentiation} (AD) tools to these spikes. AD tools
+allow \emph{algorithms} to be differentiated in the same sense as algebraic
+functions. Classical calculus tells us
+
+\begin{equation*}
+\frac{d}{dx} \left( \smash{\overbracket{x^2 + 2x + 1}^{f(x)}} \right) =
+\overbracket{2x + 2}^{f'(x)}\text{,}
+\end{equation*}
+
+which allows us to use Newton's method
+
+\begin{equation}
+x_{n+1} = x_n - \frac{f(x)}{f'(x)}
+\end{equation}
+
+to find the zeros of $f(x)$. \textbf{The technique for finding zeros of the
+spike values is analogus.} Applying AD tools to the Schur decomposition creates
+the gradient with respect to the input values (shifts). When the proper shifts
+are found to induce a zero on the spike, a deflation has been found.
+\end{block}
 
 
 %----------------------------------------------------------------------------------------
@@ -167,9 +234,25 @@ We wish to utilize autodifferentation to help optimize the process of finding ei
 
 \begin{column}{\onecolwid}\vspace{-.6in} % The second column within column 2 (column 2.2)
 
+%----------------------------------------------------------------------------------------
+%	METHODS
+%----------------------------------------------------------------------------------------
 \begin{block}{Methods}
-Taking our matrix we first start by changing it into a Hessenberg form. Next the implicit QR algorithim brings the buldge to the bottom. We then inflate the bludge using Schure decomposition. Finally we look at the sensitivity of the spikes from our shift. This is done using automatic differentiation tools. This will alow for a better choice in a shift which will improve performance and possibly result in a smaller subproblem.
+In this section, cover:
+\begin{itemize}
+\item Shift strategy
+\end{itemize}
+\end{block}
 
+%----------------------------------------------------------------------------------------
+%	FUTURE WORK
+%----------------------------------------------------------------------------------------
+\begin{block}{Future Work}
+In this section, cover:
+\begin{itemize}
+\item What are we going to do next? Very much depends on results that have not
+yet been teased out.
+\end{itemize}
 \end{block}
 
 %----------------------------------------------------------------------------------------
@@ -179,65 +262,44 @@ Taking our matrix we first start by changing it into a Hessenberg form. Next the
 \end{columns} % End of the split of column 2 - any content after this will now take up 2 columns width
 
 %----------------------------------------------------------------------------------------
-%	IMPORTANT RESULT
-%----------------------------------------------------------------------------------------
 
-%\begin{alertblock}{Important Result}
-
-%Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed commodo molestie porta. Sed ultrices scelerisque sapien ac commodo. Donec ut volutpat elit.
-
-%\end{alertblock} 
-
-%----------------------------------------------------------------------------------------
-
-\begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
-
-\begin{column}{\onecolwid} % The first column within column 2 (column 2.1)
-
-%----------------------------------------------------------------------------------------
-%	MATHEMATICAL SECTION
-%----------------------------------------------------------------------------------------
-
+%\begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
+%
+%\begin{column}{\onecolwid} % The first column within column 2 (column 2.1)
+%
+%\end{column} % End of column 2.1
+%
+%\begin{column}{\onecolwid} % The second column within column 2 (column 2.2)
+%
+%%----------------------------------------------------------------------------------------
+%
+%\end{column} % End of column 2.2
+%
+%\end{columns} % End of the split of column 2
 
 %----------------------------------------------------------------------------------------
-
-\end{column} % End of column 2.1
-
-\begin{column}{\onecolwid} % The second column within column 2 (column 2.2)
-
-%----------------------------------------------------------------------------------------
-%	RESULTS
+%	PERFORMANCE IMPROVEMENT
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Results}
+\begin{alertblock}{Performance Improvement}
 
-\begin{figure}
-\includegraphics[width=0.80\linewidth]{placeholder.jpg}
-\caption{Figure caption}
+Our algorithm outperforms XXX by XXXX. We show this by using a MATLAB package
+which counts FLOPs which shows that our algorithm performs fewer operations when
+compared to traditional QR on the same matrix.
+
+\begin{figure}[h]
+(pretty pictures here)
 \end{figure}
-Nunc tempus venenatis facilisis. Curabitur suscipit consequat eros non porttitor. Sed a massa dolor, id ornare enim:
 
-\begin{table}
-\vspace{2ex}
-\begin{tabular}{l l l}
-\toprule
-\textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
-\midrule
-Treatment 1 & 0.0003262 & 0.562 \\
-Treatment 2 & 0.0015681 & 0.910 \\
-Treatment 3 & 0.0009271 & 0.296 \\
-\bottomrule
-\end{tabular}
-\caption{Table caption}
-\end{table}
+Other text TBD
 
-\end{block}
+Note that this whole poster is now in English (no Latin :) ).
 
-%----------------------------------------------------------------------------------------
+There is a very cool-looking package that might work with MATLAB for counting
+FLOPS:
+\url{http://research.microsoft.com/en-us/um/people/minka/software/lightspeed/}
 
-\end{column} % End of column 2.2
-
-\end{columns} % End of the split of column 2
+\end{alertblock}
 
 \end{column} % End of the second column
 
@@ -251,7 +313,14 @@ Treatment 3 & 0.0009271 & 0.296 \\
 
 \begin{block}{Conclusion}
 
-Nunc tempus venenatis facilisis. \textbf{Curabitur suscipit} consequat eros non porttitor. Sed a massa dolor, id ornare enim. Fusce quis massa dictum tortor \textbf{tincidunt mattis}. Donec quam est, lobortis quis pretium at, laoreet scelerisque lacus. Nam quis odio enim, in molestie libero. Vivamus cursus mi at \textit{nulla elementum sollicitudin}.
+We successfully apply Automatic Differentiation techniques to induce deflations
+in the center of matrices. With the proper implementation, this will provide a
+large performance improvement over traditional algorithms in use today.
+Additionally, this is an enabling technique for extremely large eigenvalue
+problems. Our preliminary results indicate that a performance gain of XXX can be
+expected from proper implementations of this technique. This was determined by
+naively implementing each algorithm in MATLAB and comparing FLOP counts using
+each algorithm for the same inputs.
 
 \end{block}
 
@@ -261,12 +330,8 @@ Nunc tempus venenatis facilisis. \textbf{Curabitur suscipit} consequat eros non 
 
 \begin{block}{Additional Information}
 
-Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius dictum. 
-\begin{itemize}
-\item Curabitur pellentesque dignissim
-\item Eu facilisis est tempus quis
-\item Duis porta consequat lorem
-\end{itemize}
+The authors are pursuing publication. For more details on this technique, please
+contact the authors directly.
 
 \end{block}
 
@@ -277,7 +342,7 @@ Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius 
 \begin{block}{References}
 
 \nocite{*} % Insert publications even if they are not cited in the poster
-\small{\bibliographystyle{unsrt}
+\small{\bibliographystyle{siam}
 \bibliography{papers}\vspace{0.75in}}
 
 \end{block}
@@ -286,11 +351,12 @@ Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius 
 %	ACKNOWLEDGEMENTS
 %----------------------------------------------------------------------------------------
 
-\setbeamercolor{block title}{fg=red,bg=white} % Change the block title color
+%\setbeamercolor{block title}{fg=red,bg=white} % Change the block title color
 
 \begin{block}{Acknowledgements}
 
-\small{\rmfamily{Nam mollis tristique neque eu luctus. Suspendisse rutrum congue nisi sed convallis. Aenean id neque dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.}} \\
+The authors thank \textbf{Dr.~Allan~Struthers} (Mathematics
+department) for his guidance.
 
 \end{block}
 
@@ -301,19 +367,19 @@ Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius 
 \setbeamercolor{block alerted title}{fg=black,bg=norange} % Change the alert block title colors
 \setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
 
-\begin{alertblock}{Contact Information}
+\begin{block}{Contact Information}
 
 \begin{itemize}
-\item Web: \href{http://www.university.edu/smithlab}{http://www.university.edu/smithlab}
-\item Email: \href{mailto:ahirzel@mtu.edu}{ahirzel@mtu.edu}
+%\item Web: \href{http://www.university.edu/smithlab}{http://www.university.edu/smithlab}
+\item Email: \href{mailto:ahirzel@mtu.edu}{\texttt{ahirzel@mtu.edu}}
 \item Phone: +1 (906) 231 0866
 \end{itemize}
 
-\end{alertblock}
+\end{block}
 
 \begin{center}
 % minimum size is 1 3/4"
-\includegraphics[width=0.4\textwidth]{logo_withfullname_LG.eps}
+\includegraphics[width=0.4\linewidth]{logo_withfullname_LG.eps}
 \end{center}
 
 %----------------------------------------------------------------------------------------
