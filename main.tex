@@ -25,6 +25,8 @@
 \documentclass[final]{beamer}
 
 \usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
+\usepackage{float}
+\usepackage{onimage}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
 
@@ -132,20 +134,20 @@ $\vimage{\includegraphics[width=0.2\linewidth]{plots/original.eps}}
 \end{figure}
 \vspace{0.5ex}
 
-A general matrix is first reduced to Hessenberg~form, then the $Q R$~algorithm
-is used to reduce the sub-diagonal entries to zero (shown above). This exposes
-eigenvalues on the diagonal. The $Q R$~algorithm consists of repeated iterations
-of:
+A general matrix is first reduced to Hessenberg~form, then the $\mathbf{Q}
+\mathbf{R}$~\textbf{algorithm} is used to reduce the sub-diagonal entries to
+zero (shown above). This exposes eigenvalues on the diagonal. The $Q
+R$~algorithm consists of repeated iterations of:
 %
 \begin{align}
-A_n     &\rightarrow Q_n R_n \label{eq:qr} \\
-A_{n+1} &\leftarrow  R_n Q_n = Q_n^{-1} A_n Q_n \label{eq:rq}
+A_n     &\rightarrow Q_n \cdot R_n \label{eq:qr} \\
+A_{n+1} &\leftarrow  R_n \cdot Q_n = Q_n^{-1} \cdot A_n \cdot Q_n \label{eq:rq}
 \end{align}
 %
 As written, \eqref{eq:qr} and \eqref{eq:rq} require matrix multiplies which can
 be very large. For this reason, the $Q R$~algorithm is implemented
-\emph{implicitly}. This results in a \emph{bulge} moving from top-left to
-bottom-right:
+\emph{implicitly} as a loop of similarity transformations. This results in a
+\emph{bulge} moving from top-left to bottom-right:
 
 \vspace{0.5ex}
 \begin{figure}
@@ -161,11 +163,10 @@ $\vimage{\includegraphics[width=0.2\linewidth]{plots/bulge1.eps}}
 
 This bulge is seeded with a starting value, a \emph{shift}. A second bulge can
 be started from the bottom right. When bulges are chased from each side, they
-meet in the middle. We can \emph{inflate} this bulge using a Schur decomposition
-to form \emph{spikes}. When one of these \emph{spike} values is sufficiently
-close to zero, the problem can be subdivided into the top-left and bottom-right
-halves, exponentially reducing computation time for the eigenvalues. This is
-shown below.
+meet in the middle. A Schur decomposition is used to form \emph{spikes} around
+this bulge. When two or more of these \emph{spike values} are sufficiently
+close to zero, the problem can be subdivided recursively into the top-left
+and bottom-right halves. This is shown below.
 
 \vspace{0.5ex}
 \begin{figure}
@@ -175,7 +176,8 @@ $\vimage{\includegraphics[width=0.2\linewidth]{plots/bulges1.eps}}
 \vpointer
 \vimage{\includegraphics[width=0.2\linewidth]{plots/bulgesspiked.eps}}
 \vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/bulgesdeflated.eps}}$
+\vimage{\includegraphics[width=0.2\linewidth]{plots/bulgesdeflated.eps}}
+$
 \end{figure}
 \vspace{0.5ex}
 
@@ -186,16 +188,93 @@ $\vimage{\includegraphics[width=0.2\linewidth]{plots/bulges1.eps}}
 
 \begin{column}{\twocolwid} % Begin a column which is two columns wide (column 2)
 
+\begin{alertblock}{Proposed Technique}
+
+\begin{figure}[H]
+$\vimage{\includegraphics[width=0.2\linewidth]{plots2/impstep001.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots2/impstep006.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots2/impstep008.eps}}
+\vpointer
+\vimage{\includegraphics[width=0.2\linewidth]{plots2/impstep009.eps}}
+$
+\end{figure}
+
+Other text TBD
+
+Note that this whole poster is now in English (no Latin :) ).
+\end{alertblock}
+
 \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column
 
 \begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
 %----------------------------------------------------------------------------------------
-%	MOTIVATION: FREQUENT DEFLATIONS
+%	Schur Decomposition?
 %----------------------------------------------------------------------------------------
-\begin{block}{Motivation: Frequent Deflations}
-In practice, middle deflations are improbable. They occur when the spike tips
-become zero.
+\begin{block}{Schur Decomposition?}
+The Schur decomposition is what allows us to create spikes. For an input matrix
+$A$, it forms $Q$ and $T$ such that $Q$ diagonalizes $T$ into $A$. In symbols,
+%
+\begin{align}
+A = Q^\intercal \cdot T \cdot Q
+\end{align}
+%
+Since $Q$ diagonalizes $A$, we can consider a matrix $A_\text{sub}$ and compute
+$Q_\text{sub}$:
+%
+\begin{figure}[H]
+\begin{align*}
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Az.eps}[white]
+\node[fill=black, anchor=north east] at (1, 1) {$A_\text{sub}$};
+\end{tikzonimage} }
+\vpointer
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Qz.eps}[white]
+\node[fill=black, anchor=north east] at (1, 1) {$Q_\text{sub}$};
+\end{tikzonimage} }
+\end{align*}
+\end{figure}
+%
+We can then embed $Q_\text{sub}$ into $Q$ and apply it to $A$. In the
+neighborhood of the Schur decomposition, the subdiagonal of $A$ will be zero
+and the spikes will form.
+%
+\begin{figure}[H]
+\begin{align*}
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Q.eps}[white]
+\node[fill=black, anchor=north east] at (1, 1) {$Q$};
+\end{tikzonimage} }
+{\huge \,\times\, }
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Ahess.eps}[white]
+\node[fill=black, anchor=north east] at (1, 1) {$A$};
+\end{tikzonimage} }
+&
+\vpointer
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_final.eps}[white]
+\node[fill=black, anchor=north east] at (1, 1) {$Q^\intercal \!\cdot\! A \!\cdot\! Q$};
+\end{tikzonimage} }
+\end{align*}
+\end{figure}
+%
+\end{block}
+
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of column 2.1
+
+\begin{column}{\onecolwid}\vspace{-.6in} % The second column within column 2 (column 2.2)
+
+
+%----------------------------------------------------------------------------------------
+%	Automatic Differentiation?
+%----------------------------------------------------------------------------------------
+\begin{block}{Automatic Differentiation?}
+In practice, middle deflations are improbable because they rely on the values
+of the spikes. The spike values depend on the shifts fed to the $Q R$ algorithm. 
+are generated using a Schur decomposition.
+They occur when the spike tips become zero due to change or luck. Inducing shifts
 
 \vspace{0.5ex}
 \begin{figure}
@@ -227,22 +306,6 @@ the gradient with respect to the input values (shifts). When the proper shifts
 are found to induce a zero on the spike, a deflation has been found.
 \end{block}
 
-
-%----------------------------------------------------------------------------------------
-
-\end{column} % End of column 2.1
-
-\begin{column}{\onecolwid}\vspace{-.6in} % The second column within column 2 (column 2.2)
-
-%----------------------------------------------------------------------------------------
-%	METHODS
-%----------------------------------------------------------------------------------------
-\begin{block}{Methods}
-In this section, cover:
-\begin{itemize}
-\item Shift strategy
-\end{itemize}
-\end{block}
 
 %----------------------------------------------------------------------------------------
 %	FUTURE WORK
