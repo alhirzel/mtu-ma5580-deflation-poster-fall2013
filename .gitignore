@@ -1,3 +1,7 @@
 logo_withfullname_LG-eps-converted-to.pdf
 .*.swp
+main.bbl
+main.nav
+main.snm
 plots/*-eps-converted-to.pdf
+plots2/*-eps-converted-to.pdf
