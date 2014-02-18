@@ -27,6 +27,7 @@
 \usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
 \usepackage{float}
 \usepackage{onimage}
+\usetikzlibrary{arrows}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
 
@@ -67,6 +68,9 @@
 \newcommand*{\vimage}[1]{\vcenter{\hbox{#1}}}
 \newcommand*{\vpointer}[1][\ \triangleright\ ]{\vcenter{\hbox{$#1$}}}
 \usepackage{mathtools} % for xRightarrow
+
+\tikzset{MyCaption/.style={white, fill=black, opacity=0.95, text opacity=1.0,
+rounded corners=0.5ex, anchor=center}}
 
 % Tikz stuff for the cool diagrams
 %----------------------------------------------------------------------------------------
@@ -121,66 +125,89 @@ apply automatic differentiation tools to achieve frequent deflations.
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Existing Techniques}
-
-\vspace{0.5ex}
-\begin{figure}
-$\vimage{\includegraphics[width=0.2\linewidth]{plots/original.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/qr1.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/qr2.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/qrdone.eps}}$
-\end{figure}
-\vspace{0.5ex}
-
+%
 A general matrix is first reduced to Hessenberg~form, then the $\mathbf{Q}
 \mathbf{R}$~\textbf{algorithm} is used to reduce the sub-diagonal entries to
-zero (shown above). This exposes eigenvalues on the diagonal. The $Q
-R$~algorithm consists of repeated iterations of:
+zero iteratively:%
+%
+\begin{align*}
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/original.eps}
+\node[MyCaption] at (0.5, 1) {0 iter};
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/qr1.eps}
+\draw[-triangle 60, draw, line width=0.33ex, red] (0.1, 0.25) -- ++(0.2, 0.2);
+\draw[-triangle 60, draw, line width=0.33ex, red] (0.25, 0.1) -- ++(0.2, 0.2);
+\node[MyCaption] at (0.5, 1) {1 iter};
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/qr2.eps}
+\draw[-triangle 60, draw, line width=0.33ex, yellow] (0.1, 0.25) -- ++(0.2, 0.2);
+\draw[-triangle 60, draw, line width=0.33ex, yellow] (0.25, 0.1) -- ++(0.2, 0.2);
+\node[MyCaption] at (0.5, 1) {30};
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/qrdone.eps}
+\node[green] at (0.25, 0.25) {\Large $\checkmark$};
+\node[MyCaption] at (0.5, 1) {$\cdots$};
+\end{tikzonimage} }
+\end{align*}
+%\vspace{0.5ex}
+%
+Since the resulting matrix is strictly upper triangular, \textbf{the eigenvalues
+are the diagonal entries}. The $Q R$~algorithm consists of repeated iterations
+of:
 %
 \begin{align}
-A_n     &\rightarrow Q_n \cdot R_n \label{eq:qr} \\
-A_{n+1} &\leftarrow  R_n \cdot Q_n = Q_n^{-1} \cdot A_n \cdot Q_n \label{eq:rq}
+A_n     &\rightarrow Q_n R_n \label{eq:qr} \\
+A_{n+1} &\leftarrow  R_n Q_n = Q_n^{-1} A_n Q_n \label{eq:rq}
 \end{align}
 %
-As written, \eqref{eq:qr} and \eqref{eq:rq} require matrix multiplies which can
-be very large. For this reason, the $Q R$~algorithm is implemented
-\emph{implicitly} as a loop of similarity transformations. This results in a
-\emph{bulge} moving from top-left to bottom-right:
+As written, \eqref{eq:qr} and \eqref{eq:rq} require multiplication of large
+matrices. For this reason, the $Q R$~algorithm is implemented as a loop of
+similarity transformations.
+%
+\begin{align*}
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulge1.eps}
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulge2.eps}
+\draw[-triangle 60, draw, line width=0.33ex, white] (0.05, 0.5) -- ++(0.25, -0.25);
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulge3.eps}
+\draw[-triangle 60, draw, line width=0.33ex, white] (0.2, 0.35) -- ++(0.25, -0.25);
+\end{tikzonimage} }
+\!\cdots\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulgedone.eps}
+\end{tikzonimage} }
+\end{align*}
+%
+A \emph{bulge} is repeatedly \textbf{chased down diagonally}. To speed
+convergence \cite{watkins2007matrix}, the bulge is seeded with one or more
+\emph{shifts}, which represent \textbf{parameter choices}.
+% XXX SEPARATE
+A second bulge can be
+started from the bottom, and the two can meet in the imddle right.  A
+\textbf{Schur decomposition is used to form \emph{spikes}} around this bulge.
+Under the right conditions, the problem can be subdivided recursively into the
+top-left and bottom-right quarters. This is shown below.
+%
+\begin{align*}
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulges1.eps}
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulges2.eps}
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulgesspiked.eps}
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulgesdeflated.eps}
+\end{tikzonimage} }
+\end{align*}
 
-\vspace{0.5ex}
-\begin{figure}
-$\vimage{\includegraphics[width=0.2\linewidth]{plots/bulge1.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/bulge2.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/bulge3.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/bulgedone.eps}}$
-\end{figure}
-\vspace{0.5ex}
-
-This bulge is seeded with a starting value, a \emph{shift}. A second bulge can
-be started from the bottom right. When bulges are chased from each side, they
-meet in the middle. A Schur decomposition is used to form \emph{spikes} around
-this bulge. When two or more of these \emph{spike values} are sufficiently
-close to zero, the problem can be subdivided recursively into the top-left
-and bottom-right halves. This is shown below.
-
-\vspace{0.5ex}
-\begin{figure}
-$\vimage{\includegraphics[width=0.2\linewidth]{plots/bulges1.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/bulges2.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/bulgesspiked.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots/bulgesdeflated.eps}}
-$
-\end{figure}
-\vspace{0.5ex}
-
+\vfill
 \end{block}
 \end{column} % End of the first column
 
@@ -188,74 +215,111 @@ $
 
 \begin{column}{\twocolwid} % Begin a column which is two columns wide (column 2)
 
-\begin{alertblock}{Proposed Technique}
 
-\begin{figure}[H]
-$\vimage{\includegraphics[width=0.2\linewidth]{plots2/impstep001.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots2/impstep006.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots2/impstep008.eps}}
-\vpointer
-\vimage{\includegraphics[width=0.2\linewidth]{plots2/impstep009.eps}}
-$
-\end{figure}
+%----------------------------------------------------------------------------------------
+%	Proposed Techniques: Inducing Middle Deflations
+%----------------------------------------------------------------------------------------
+\begin{alertblock}{Proposed Technique: Inducing Recursive Middle Deflation}
+We expect middle deflation to be possible by chasing bulges from both corners
+simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
+%
+\begin{align*}
+\vimage{ \begin{tikzonimage}[width=0.16\linewidth]{plots2/impstep002.eps} \end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.16\linewidth]{plots2/impstep006.eps} \end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.16\linewidth]{plots2/impstep008.eps} \end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.16\linewidth]{plots2/impstep009.eps} \end{tikzonimage} }
+&
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.16\linewidth]{plots2/final.eps}
+\node[green] at (0.8, 0.7) {\huge $\checkmark$};
+\end{tikzonimage} }
+\\[1ex]
+%
+\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep002.eps} \end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep004.eps} \end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep005.eps} \end{tikzonimage} }
+&
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/final.eps}
+\node[green] at (0.8, 0.7) {\Large $\checkmark$};
+\end{tikzonimage} }
+%
+\\[1ex]
+%
+\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep001.eps} \end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep002.eps} \end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep003.eps} \end{tikzonimage} }
+&
+\!\!\vpointer\!\!
+\hspace{0.096\textwidth}\hspace{0.5em} \vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/final.eps}
+\node[green] at (0.8, 0.75) {\large $\checkmark$};
+\end{tikzonimage} }
+\end{align*}
+%
+% position this absolutely on the page (ick)
+\begin{tikzpicture}[remember picture, overlay]
+\node [shift={(-30.5in,-13.5in)}, align=center, anchor=center] at (current page.north east) {
+	\Large            \textbf{Recursion is a} \\[1.5ex]
+	\huge \color{red} \textbf{HUGE} \\[0.25ex]
+	\Large            \textbf{performance win.}
+};
+\end{tikzpicture}
 
-Other text TBD
-
-Note that this whole poster is now in English (no Latin :) ).
 \end{alertblock}
 
 \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column
 
 \begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
+
 %----------------------------------------------------------------------------------------
-%	Schur Decomposition?
+%	Schur Decomposition
 %----------------------------------------------------------------------------------------
-\begin{block}{Schur Decomposition?}
-The Schur decomposition is what allows us to create spikes. For an input matrix
-$A$, it forms $Q$ and $T$ such that $Q$ diagonalizes $T$ into $A$. In symbols,
+\begin{block}{Schur Decomposition}
 %
 \begin{align}
-A = Q^\intercal \cdot T \cdot Q
+A = Q^\intercal T Q %\quad \therefore Q A Q^\intercal = T
 \end{align}
 %
-Since $Q$ diagonalizes $A$, we can consider a matrix $A_\text{sub}$ and compute
+The Schur decomposition allows us to create spikes. For an input matrix $A$, it
+forms symmetric $Q$ and diagonal $T$ such that \textbf{$\mathbf{Q}$ diagonalizes
+$\mathbf{A}$ into $\mathbf{T}$}. Consider a submatrix $A_\text{sub}$ and compute
 $Q_\text{sub}$:
 %
-\begin{figure}[H]
 \begin{align*}
-\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Az.eps}[white]
-\node[fill=black, anchor=north east] at (1, 1) {$A_\text{sub}$};
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Az.eps}
+\node[MyCaption] at (0.5, 1) {$A_\text{sub}$};
 \end{tikzonimage} }
 \vpointer
-\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Qz.eps}[white]
-\node[fill=black, anchor=north east] at (1, 1) {$Q_\text{sub}$};
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Qz.eps}
+\node[MyCaption] at (0.5, 1) {$Q_\text{sub}$};
+\end{tikzonimage} }
+\vpointer
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Q.eps}
+\node[MyCaption] at (0.5, 1) {$Q$};
 \end{tikzonimage} }
 \end{align*}
-\end{figure}
 %
 We can then embed $Q_\text{sub}$ into $Q$ and apply it to $A$. In the
-neighborhood of the Schur decomposition, the subdiagonal of $A$ will be zero
-and the spikes will form.
+neighborhood of the decomposition, the subdiagonal of $A$ is zeroed and the
+spikes form.
 %
-\begin{figure}[H]
 \begin{align*}
-\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Q.eps}[white]
-\node[fill=black, anchor=north east] at (1, 1) {$Q$};
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Ahess.eps}
+\node[MyCaption] at (0.5, 1) {$A$};
 \end{tikzonimage} }
-{\huge \,\times\, }
-\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Ahess.eps}[white]
-\node[fill=black, anchor=north east] at (1, 1) {$A$};
-\end{tikzonimage} }
-&
 \vpointer
-\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_final.eps}[white]
-\node[fill=black, anchor=north east] at (1, 1) {$Q^\intercal \!\cdot\! A \!\cdot\! Q$};
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_final.eps}
+\node[MyCaption] at (0.5, 1) {$Q^\intercal A Q$};
 \end{tikzonimage} }
 \end{align*}
-\end{figure}
 %
 \end{block}
 
@@ -268,9 +332,21 @@ and the spikes will form.
 
 
 %----------------------------------------------------------------------------------------
-%	Automatic Differentiation?
+%	Automatic Differentiation
 %----------------------------------------------------------------------------------------
-\begin{block}{Automatic Differentiation?}
+\begin{block}{Automatic Differentiation (AD)}
+%
+\begin{align*}
+	M_{n+1} = \mathtt{MiddleDeflation}(M, \mathtt{shifts})
+\end{align*}
+%
+AD tools can be applied to compute the sensitivities of the spike tips to the
+shifts.
+%
+\begin{align*}
+	\frac{d M_{n+1}}{d\mathtt{shifts}} = \mathtt{func}(M, \mathtt{shifts})
+\end{align*}
+
 In practice, middle deflations are improbable because they rely on the values
 of the spikes. The spike values depend on the shifts fed to the $Q R$ algorithm. 
 are generated using a Schur decomposition.
@@ -309,13 +385,13 @@ are found to induce a zero on the spike, a deflation has been found.
 %----------------------------------------------------------------------------------------
 %	FUTURE WORK
 %----------------------------------------------------------------------------------------
-\begin{block}{Future Work}
-In this section, cover:
-\begin{itemize}
-\item What are we going to do next? Very much depends on results that have not
-yet been teased out.
-\end{itemize}
-\end{block}
+%\begin{block}{Future Work}
+%In this section, cover:
+%\begin{itemize}
+%\item What are we going to do next? Very much depends on results that have not
+%yet been teased out.
+%\end{itemize}
+%\end{block}
 
 %----------------------------------------------------------------------------------------
 
@@ -343,25 +419,25 @@ yet been teased out.
 %	PERFORMANCE IMPROVEMENT
 %----------------------------------------------------------------------------------------
 
-\begin{alertblock}{Performance Improvement}
-
-Our algorithm outperforms XXX by XXXX. We show this by using a MATLAB package
-which counts FLOPs which shows that our algorithm performs fewer operations when
-compared to traditional QR on the same matrix.
-
-\begin{figure}[h]
-(pretty pictures here)
-\end{figure}
-
-Other text TBD
-
-Note that this whole poster is now in English (no Latin :) ).
-
-There is a very cool-looking package that might work with MATLAB for counting
-FLOPS:
-\url{http://research.microsoft.com/en-us/um/people/minka/software/lightspeed/}
-
-\end{alertblock}
+%\begin{alertblock}{Performance Improvement}
+%
+%Our algorithm outperforms XXX by XXXX. We show this by using a MATLAB package
+%which counts FLOPs which shows that our algorithm performs fewer operations when
+%compared to traditional QR on the same matrix.
+%
+%\begin{figure}[h]
+%(pretty pictures here)
+%\end{figure}
+%
+%Other text TBD
+%
+%Note that this whole poster is now in English (no Latin :) ).
+%
+%There is a very cool-looking package that might work with MATLAB for counting
+%FLOPS:
+%\url{http://research.microsoft.com/en-us/um/people/minka/software/lightspeed/}
+%
+%\end{alertblock}
 
 \end{column} % End of the second column
 
@@ -373,16 +449,18 @@ FLOPS:
 %	CONCLUSION
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Conclusion}
+\begin{block}{Conclusions and Future Work}
+
+REWRITE THIS WHOLE SECTION
 
 We successfully apply Automatic Differentiation techniques to induce deflations
 in the center of matrices. With the proper implementation, this will provide a
 large performance improvement over traditional algorithms in use today.
 Additionally, this is an enabling technique for extremely large eigenvalue
-problems. Our preliminary results indicate that a performance gain of XXX can be
-expected from proper implementations of this technique. This was determined by
-naively implementing each algorithm in MATLAB and comparing FLOP counts using
-each algorithm for the same inputs.
+%problems. Our preliminary results indicate that a performance gain of XXX can be
+%expected from proper implementations of this technique. This was determined by
+%naively implementing each algorithm in MATLAB and comparing FLOP counts using
+%each algorithm for the same inputs.
 
 \end{block}
 
@@ -390,10 +468,9 @@ each algorithm for the same inputs.
 %	ADDITIONAL INFORMATION
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Additional Information}
+\begin{block}{Future Work}
 
-The authors are pursuing publication. For more details on this technique, please
-contact the authors directly.
+The authors are pursuing publication.
 
 \end{block}
 
@@ -403,7 +480,7 @@ contact the authors directly.
 
 \begin{block}{References}
 
-\nocite{*} % Insert publications even if they are not cited in the poster
+%\nocite{*} % Insert publications even if they are not cited in the poster
 \small{\bibliographystyle{siam}
 \bibliography{papers}\vspace{0.75in}}
 
@@ -417,8 +494,8 @@ contact the authors directly.
 
 \begin{block}{Acknowledgements}
 
-The authors thank \textbf{Dr.~Allan~Struthers} (Mathematics
-department) for his guidance.
+The authors thank \textbf{Dr.~Allan~Struthers} (in the Mathematics department)
+for his guidance.
 
 \end{block}
 
