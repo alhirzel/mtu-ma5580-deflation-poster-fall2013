@@ -287,14 +287,13 @@ They occur when the spike tips become zero due to change or luck. Inducing shift
 
 We apply \textbf{automatic differentiation} (AD) tools to these spikes. AD tools
 allow \emph{algorithms} to be differentiated in the same sense as algebraic
-functions. Classical calculus tells us
+functions. Classical calculus allows us to linearize a function $f(x)$ at $x=a$ as
 
 \begin{equation*}
-\frac{d}{dx} \left( \smash{\overbracket{x^2 + 2x + 1}^{f(x)}} \right) =
-\overbracket{2x + 2}^{f'(x)}\text{,}
+  f(x) \approx f(a) + f'(x) \cdot (x - a)
 \end{equation*}
 
-which allows us to use Newton's method
+which solving for the root $(f(x) = 0)$ gives us Newton's method 
 
 \begin{equation}
 x_{n+1} = x_n - \frac{f(x)}{f'(x)}
