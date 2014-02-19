@@ -25,6 +25,7 @@
 \documentclass[final]{beamer}
 
 \usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
+\usepackage{pgfplots}
 \usepackage{float}
 \usepackage{onimage}
 \usetikzlibrary{arrows}
@@ -220,8 +221,9 @@ top-left and bottom-right quarters. This is shown below.
 %	Proposed Techniques: Inducing Middle Deflations
 %----------------------------------------------------------------------------------------
 \begin{alertblock}{Proposed Technique: Inducing Recursive Middle Deflation}
-We expect middle deflation to be possible by chasing bulges from both corners
-simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
+%We expect middle deflation to be possible by chasing bulges from both corners
+%simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
+%\cite{Giles2008} \cite{Struthers2014}
 %
 \begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.16\linewidth]{plots2/impstep002.eps} \end{tikzonimage} }
@@ -238,7 +240,7 @@ simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
 \draw[black,    line width=0.5ex]  (0,1)     rectangle (0.6,0.4);
 \draw[green!90, line width=0.20ex] (0,1)     rectangle (0.6,0.4);
 \draw[black,    line width=0.5ex]  (0.6,0.4) rectangle (1,0);
-\draw[white!90,   line width=0.20ex] (0.6,0.4) rectangle (1,0);
+\draw[white!90, line width=0.20ex] (0.6,0.4) rectangle (1,0);
 \end{tikzonimage} }
 \\[1ex]
 %
@@ -267,31 +269,31 @@ simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
 \\[1ex]
 %
 \vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep001.eps}
-\draw[black,  line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (1,0);
 \draw[white!90, line width=0.20ex] (0,1)     rectangle (1,0);
 \end{tikzonimage} }
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep002.eps}
-\draw[black,  line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (1,0);
 \draw[white!90, line width=0.20ex] (0,1)     rectangle (1,0);
 \end{tikzonimage} }
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep003.eps}
-\draw[black,  line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (1,0);
 \draw[white!90, line width=0.20ex] (0,1)     rectangle (1,0);
 \end{tikzonimage} }
 &
 \!\!\vpointer\!\!
 \hspace{0.096\textwidth}\hspace{0.5em} \vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/final.eps}
 %\node[green] at (0.8, 0.75) {\large $\checkmark$};
-\draw[black,  line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (1,0);
 \draw[white!90, line width=0.20ex] (0,1)     rectangle (1,0);
 \end{tikzonimage} }
 \end{align*}
 %
 % position this absolutely on the page (ick)
 \begin{tikzpicture}[remember picture, overlay]
-\node [shift={(-30.5in,-13.5in)}, align=center, anchor=center] at (current page.north east) {
+\node [shift={(-30.5in,-13.25in)}, align=center, anchor=center] at (current page.north east) {
 	\Large            \textbf{Subdivision is a} \\[1.5ex]
 	\huge \color{red} \textbf{HUGE} \\[0.25ex]
 	\Large            \textbf{performance win.}
@@ -362,6 +364,31 @@ decomposition, and forms spikes.
 %	Automatic Differentiation
 %----------------------------------------------------------------------------------------
 \begin{block}{Automatic Differentiation (AD)}
+%
+%
+\begin{align*}
+\vimage{ \begin{tikzonimage}[width=0.40\linewidth]{plots2/impstep009.eps}
+		\draw[red, ultra thick] (0.325, 0.375) circle (1ex) node[left=0.5em,
+		rounded corners, white, fill=black, opacity=0.95, text opacity=1.0] {$x$};
+\end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzpicture}
+\begin{axis}[
+		xlabel={(shift choices)}, ylabel=$x$,
+	width=0.45\linewidth,
+	axis x line=center,
+	axis y line=center,
+	xtick=\empty, ytick=\empty,
+	no markers,
+	x label style={at={(axis description cs:0.5,0.0)},anchor=north},
+]
+\addplot[red] {(x-2)^2 - (x-2) - 0};
+\end{axis}
+\end{tikzpicture} }
+\end{align*}
+
+\begin{align*}
+\end{align*}
 %
 \begin{align*}
 	M_{n+1} = \mathtt{MiddleDeflation}(M, \mathtt{shifts})
@@ -473,10 +500,10 @@ are found to induce a zero on the spike, a deflation has been found.
 \begin{column}{\onecolwid} % The third column
 
 %----------------------------------------------------------------------------------------
-%	CONCLUSION
+%	CONCLUSIONS
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Conclusions and Future Work}
+\begin{block}{Conclusions}
 
 REWRITE THIS WHOLE SECTION
 
@@ -492,12 +519,13 @@ Additionally, this is an enabling technique for extremely large eigenvalue
 \end{block}
 
 %----------------------------------------------------------------------------------------
-%	ADDITIONAL INFORMATION
+%	FUTURE WORK
 %----------------------------------------------------------------------------------------
 
 \begin{block}{Future Work}
 
-The authors are pursuing publication.
+The authors are implementing and testing the described techniques in
+\href{http://octave.org/}{GNU Octave}.
 
 \end{block}
 
