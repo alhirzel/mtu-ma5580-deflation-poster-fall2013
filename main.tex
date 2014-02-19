@@ -234,32 +234,58 @@ simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
 &
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.16\linewidth]{plots2/final.eps}
-\node[green] at (0.8, 0.7) {\huge $\checkmark$};
+%\node[green] at (0.8, 0.7) {\huge $\checkmark$};
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (0.6,0.4);
+\draw[green!90, line width=0.20ex] (0,1)     rectangle (0.6,0.4);
+\draw[black,    line width=0.5ex]  (0.6,0.4) rectangle (1,0);
+\draw[white!90,   line width=0.20ex] (0.6,0.4) rectangle (1,0);
 \end{tikzonimage} }
 \\[1ex]
 %
-\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep002.eps} \end{tikzonimage} }
+\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep002.eps}
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[green!90, line width=0.20ex] (0,1)     rectangle (1,0);
+\end{tikzonimage} }
 \!\!\vpointer\!\!
-\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep004.eps} \end{tikzonimage} }
+\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep004.eps}
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[green!90, line width=0.20ex] (0,1)     rectangle (1,0);
+\end{tikzonimage} }
 \!\!\vpointer\!\!
-\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep005.eps} \end{tikzonimage} }
+\vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/impstep005.eps}
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[green!90, line width=0.20ex] (0,1)     rectangle (1,0);
+\end{tikzonimage} }
 &
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.096\linewidth]{plots3/final.eps}
-\node[green] at (0.8, 0.7) {\Large $\checkmark$};
+%\node[green] at (0.8, 0.7) {\Large $\checkmark$};
+\draw[black,    line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[green!90, line width=0.20ex] (0,1)     rectangle (1,0);
 \end{tikzonimage} }
 %
 \\[1ex]
 %
-\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep001.eps} \end{tikzonimage} }
+\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep001.eps}
+\draw[black,  line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[white!90, line width=0.20ex] (0,1)     rectangle (1,0);
+\end{tikzonimage} }
 \!\!\vpointer\!\!
-\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep002.eps} \end{tikzonimage} }
+\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep002.eps}
+\draw[black,  line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[white!90, line width=0.20ex] (0,1)     rectangle (1,0);
+\end{tikzonimage} }
 \!\!\vpointer\!\!
-\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep003.eps} \end{tikzonimage} }
+\vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/impstep003.eps}
+\draw[black,  line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[white!90, line width=0.20ex] (0,1)     rectangle (1,0);
+\end{tikzonimage} }
 &
 \!\!\vpointer\!\!
 \hspace{0.096\textwidth}\hspace{0.5em} \vimage{ \begin{tikzonimage}[width=0.064\linewidth]{plots4/final.eps}
-\node[green] at (0.8, 0.75) {\large $\checkmark$};
+%\node[green] at (0.8, 0.75) {\large $\checkmark$};
+\draw[black,  line width=0.5ex]  (0,1)     rectangle (1,0);
+\draw[white!90, line width=0.20ex] (0,1)     rectangle (1,0);
 \end{tikzonimage} }
 \end{align*}
 %
@@ -284,14 +310,15 @@ simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
 %----------------------------------------------------------------------------------------
 \begin{block}{Schur Decomposition}
 %
+The Schur decomposition allows us to create spikes. For an input matrix $A$, it
+forms symmetric $Q$ and diagonal $T$ such that \textbf{$\mathbf{Q}$ diagonalizes
+$\mathbf{A}$ into $\mathbf{T}$}.
+%
 \begin{align}
 A = Q^\intercal T Q %\quad \therefore Q A Q^\intercal = T
 \end{align}
 %
-The Schur decomposition allows us to create spikes. For an input matrix $A$, it
-forms symmetric $Q$ and diagonal $T$ such that \textbf{$\mathbf{Q}$ diagonalizes
-$\mathbf{A}$ into $\mathbf{T}$}. Consider a submatrix $A_\text{sub}$ and compute
-$Q_\text{sub}$:
+Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$:
 %
 \begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Az.eps}

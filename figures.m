@@ -40,7 +40,7 @@ A = hess(inv(Q) * diag(eVals) * Q);
 X = hess(H);
 split1 = 12;
 X(split1+1, split1) = 0;
-X(1:split1, split1+1:end) = 0;
+%X(1:split1, split1+1:end) = 0; % zero upper right corner
 pltMatNoScale(X); print -deps -tight plots2/final.eps;
 
 % recurse top left
@@ -50,7 +50,7 @@ A = X(1:split1, 1:split1);
 A = hess(H);
 p = 7;
 A(p+1, p) = 0;
-A(1:p, p+1:end) = 0;
+%A(1:p, p+1:end) = 0; % zero upper right corner
 pltMatNoScale(A); print -deps -tight plots3/final.eps;
 
 % recurse bottom right
@@ -60,10 +60,8 @@ A = X((split1+1):end, (split1+1):end);
 A = hess(H);
 p = 4;
 A(p+1, p) = 0;
-A(1:p, p+1:end) = 0;
+%A(1:p, p+1:end) = 0; % zero upper right corner
 pltMatNoScale(A); print -deps -tight plots4/final.eps;
-
-exit
 
 
 
