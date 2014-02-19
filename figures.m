@@ -175,4 +175,7 @@ create_poster_matrix_figure(Qz, 'schur_Qz');
 create_poster_matrix_figure(Q, 'schur_Q');
 create_poster_matrix_figure(Q', 'schur_Qt');
 create_poster_matrix_figure(Q' * Ahess * Q, 'schur_final');
+X = hess(Q' * Ahess * Q);
+%X(10, 9) = 0;
+create_poster_matrix_figure(X, 'schur_final_hess');
 

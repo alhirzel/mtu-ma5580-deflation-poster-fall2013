@@ -31,6 +31,7 @@
 \usetikzlibrary{arrows}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
+\usepackage{exscale} % fix size of \sum
 
 \setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
 \setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
@@ -314,7 +315,7 @@ top-left and bottom-right quarters. This is shown below.
 %
 The Schur decomposition allows us to create spikes. For an input matrix $A$, it
 forms symmetric $Q$ and diagonal $T$ such that \textbf{$\mathbf{Q}$ diagonalizes
-$\mathbf{A}$ into $\mathbf{T}$}, as 
+$\mathbf{A}$ into $\mathbf{T}$}:
 %
 \begin{align}
 A = Q^\intercal T Q %\quad \therefore Q A Q^\intercal = T
@@ -327,10 +328,11 @@ Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$:
 \node[MyCaption] at (0.5, 1) {$A_\text{sub}$};
 \end{tikzonimage} }
 \vpointer
+\!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Qz.eps}
 \node[MyCaption] at (0.5, 1) {$Q_\text{sub}$};
 \end{tikzonimage} }
-\vpointer
+\!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Q.eps}
 \node[MyCaption] at (0.5, 1) {$Q$};
 \end{tikzonimage} }
@@ -344,16 +346,19 @@ decomposition, and forms spikes.
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Ahess.eps}
 \node[MyCaption] at (0.5, 1) {$A$};
 \end{tikzonimage} }
-\vpointer
+\!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_final.eps}
 \node[MyCaption] at (0.5, 1) {$Q^\intercal A Q$};
 \end{tikzonimage} }
+\!\!\vpointer\!\!
+\vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_final_hess.eps}
+\node[MyCaption] at (0.5, 1) {\texttt{hess}};
+\end{tikzonimage} }
 \end{align*}
 %
-This matrix is then reduced to Hessenberg form again.
-If half of the values on the spike are near zero, then
-the Hessenberg form has a zero on the subdiagonal which
-allows for matrix deflation (see above box).
+This matrix is then reduced to Hessenberg form again. If half of the values on
+the spike are near zero, then the Hessenberg form has a zero on the subdiagonal
+which allows for matrix deflation (see above box).
 %
 \end{block}
 
@@ -376,15 +381,16 @@ control these shifts, the problem of creating a middle deflation can be phrased
 as
 %
 \begin{equation}
-  \min_{\textrm{shifts}} \left( \Sigma 
-    \left| \textrm{selected spike values}%I'm not sure if 'selected' is necesary. True, but maybe cluttersome
-  \right| \right)
+\min_{\textrm{shifts}} {\Huge \sum}
+\big|
+\textrm{targeted spike values}%I'm not sure if 'selected' is necesary. True, but maybe cluttersome
+\big|
 \end{equation}
 %
 Minimizing this implies that the spikes have many zeros, allowing for middle
-deflation. Selecting a single element and tracing its behavior would cause it
-to sketch out a curve as shown below:
-
+deflation. Selecting a single spike element and tracing its value would cause
+it to sketch out a curve as shown below:
+%
 \begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.40\linewidth]{plots2/impstep009.eps}
 		\draw[red, ultra thick] (0.325, 0.375) circle (1ex) node[left=0.5em,
@@ -393,7 +399,7 @@ to sketch out a curve as shown below:
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzpicture}
 \begin{axis}[
-		xlabel={(shift choices)}, ylabel=$x$,
+	xlabel={(shift choices)}, ylabel=$x$,
 	width=0.45\linewidth,
 	axis x line=center,
 	axis y line=center,
@@ -405,14 +411,11 @@ to sketch out a curve as shown below:
 \end{axis}
 \end{tikzpicture} }
 \end{align*}
-
-\begin{align*}
-\end{align*}
 %
-Many effective methods for minimizing functions rely upon derivatives (e.g.
-Newton's Method). \textbf{Automatic differentiation} (AD) methods allow for
-differentiation of matrix operations \cite{Giles2008} and the schur
-decomposition \cite{Struthers2014}. Thus by using AD tecniques we can utilize
+Many effective methods for minimizing functions rely upon derivative information
+(e.g. Newton's Method). \textbf{Automatic~Differentiation} (AD) methods allow
+for differentiation of matrix operations \cite{Giles2008} and the Schur
+decomposition \cite{Struthers2014}. Thus by using AD techniques we can utilize
 existing minimization algorithms to create deflatable matrices.
 
 \end{block}
