@@ -167,9 +167,7 @@ A_n     &\rightarrow Q_n R_n \label{eq:qr} \\
 A_{n+1} &\leftarrow  R_n Q_n = Q_n^{-1} A_n Q_n \label{eq:rq}
 \end{align}
 %
-As written, \eqref{eq:qr} and \eqref{eq:rq} require multiplication of large
-matrices. For this reason, the $Q R$~algorithm is implemented as a loop of
-similarity transformations.
+Equations \eqref{eq:qr} and \eqref{eq:rq} can be implemented implicitly:%
 %
 \vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulge1.eps}
@@ -187,27 +185,29 @@ similarity transformations.
 \end{tikzonimage} }
 \end{align*}
 %
-\newline\noindent{}\textbf{A \emph{bulge} is chased down the diagonal}. To speed convergence
-\cite{watkins2007matrix}, the bulge is seeded with one or more \emph{shifts},
-which represent \textbf{parameter choices}.
-% XXX SEPARATE
-A second bulge can be
-started from the bottom, and the two can meet in the middle.  A
-\textbf{Schur~decomposition is used to form \emph{spikes}} around this bulge.
-Under the right conditions, the problem can be subdivided recursively into the
-top-left and bottom-right quarters. This is shown below.
+\newline\noindent{}\textbf{A \emph{bulge} is chased down the diagonal}. To speed
+convergence \cite{watkins2007matrix}, the bulge is seeded with one or more
+\emph{shifts}, which are \textbf{parameter choices}. A second bulge can be
+chased from the bottom. A \textbf{Schur~decomposition is used to form
+\emph{spikes}} around this bulge. Under the right conditions, the problem can be
+subdivided recursively into the top-left and bottom-right quarters. This is
+shown below.
 %
 \vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulges1.eps}
+\node[MyCaption] at (0.5, 1) {Bulges};
 \end{tikzonimage} }
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulges2.eps}
+\node[MyCaption] at (0.5, 1) {Bulge};
 \end{tikzonimage} }
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulgesspiked.eps}
+\node[MyCaption] at (0.5, 1) {Spikes};
 \end{tikzonimage} }
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulgesdeflated.eps}
+\node[MyCaption] at (0.5, 1) {Deflation};
 \end{tikzonimage} }
 \end{align*}
 
@@ -312,15 +312,16 @@ top-left and bottom-right quarters. This is shown below.
 %----------------------------------------------------------------------------------------
 \begin{block}{Schur Decomposition}
 %
-The Schur decomposition allows us to create spikes \cite{BramanThesis}. For an
-input matrix $A$, it forms symmetric $Q$ and diagonal $T$ such that
+Schur~decompositions allow spikes to be created \cite{BramanThesis}. For an
+input matrix $A$, they form symmetric $Q$ and diagonal $T$ such that
 \textbf{$\mathbf{Q}$ diagonalizes $\mathbf{A}$ into $\mathbf{T}$}:
 %
 \begin{align}
 A = Q^\intercal T Q %\quad \therefore Q A Q^\intercal = T
 \end{align}
 %
-Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$:
+Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$, then create $Q$
+by embedding $Q_\text{sub}$ into the identity.
 %
 \vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Az.eps}
@@ -336,9 +337,8 @@ Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$:
 \end{tikzonimage} }
 \end{align*}
 %
-\newline\noindent{}We can then create $Q$ by embedding $Q_\text{sub}$ into the identity. Applying
-this to $A$ creates zeros on the subdiagonal in the neighborhood of the
-decomposition, and forms spikes.
+\newline\noindent{}Applying $Q$ to $A$ zeros the subdiagonal in the neighborhood
+of the decomposition, and forms spikes.
 %
 \vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Ahess.eps}
@@ -354,9 +354,10 @@ decomposition, and forms spikes.
 \end{tikzonimage} }
 \end{align*}
 %
-\newline\noindent{}This matrix is then reduced to Hessenberg form again. If half of the values on
-the spike are near zero, then the Hessenberg form has a zero on the subdiagonal
-which allows for matrix deflation (see above box).
+\newline\noindent{}This matrix is then reduced to Hessenberg form again. If
+roughly half of the values on the spike are near zero, then the Hessenberg form
+has a zero on the subdiagonal. This allows for matrix deflation (shown in large
+center box above).
 %
 \end{block}
 
@@ -373,21 +374,22 @@ which allows for matrix deflation (see above box).
 %----------------------------------------------------------------------------------------
 \begin{block}{Achieving Deflation}
 
-In practice, middle deflations are improbable because they rely on the spikes
-having many zeros. The values on the spike depend on the shifts. Since we can
-control these shifts, the problem of creating a middle deflation can be phrased
-as
+Middle deflations are improbable because they rely on the spikes having many
+zeros, and the spike values depend on shift choices. Deflations can be induced
+with proper shift choices. Specifically, the proper shifts can be found by
+solving:
 %
-\begin{equation}
+\begin{align}
 \min_{\textrm{shifts}} {\Huge \sum}
 \big|
-\textrm{targeted spike values}%I'm not sure if 'selected' is necesary. True, but maybe cluttersome
+\textrm{spike values}
 \big|
-\end{equation}
+\label{eq:min}
+\end{align}
 %
-Minimizing this implies that the spikes have many zeros, allowing for middle
-deflation. Selecting a single spike element and tracing its value would cause
-it to sketch out a curve as shown below:
+Satisfaction of \eqref{eq:min} implies that spikes will be close to zero,
+allowing for middle deflation. Graphically, a single spike element can be
+considered:
 %
 \vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.40\linewidth]{plots2/impstep009.eps}
@@ -397,24 +399,26 @@ it to sketch out a curve as shown below:
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzpicture}
 \begin{axis}[
-	xlabel={(shift choices)}, ylabel=$x$,
+	xlabel={(all shift choices)}, ylabel=$x$,
 	width=0.45\linewidth,
-	axis x line=center,
-	axis y line=center,
+	axis lines=middle,
+	axis line style = {line width=0.2ex},
 	xtick=\empty, ytick=\empty,
 	no markers,
 	x label style={at={(axis description cs:0.5,0.0)},anchor=north},
+	domain=-1:5,
 ]
 \addplot[red] {(x-2)^2 - (x-2) - 0};
 \end{axis}
 \end{tikzpicture} }
 \end{align*}
 %
-\newline\noindent{}Many effective methods for minimizing functions rely upon derivative information
-(e.g. Newton's Method). \textbf{Automatic~Differentiation} (AD) methods allow
-for differentiation of matrix operations \cite{Giles2008} and the Schur
-decomposition \cite{Struthers2014}. Thus by using AD techniques we can utilize
-existing minimization algorithms to create deflatable matrices.
+\newline\noindent{}This element $x$ can be driven to zero with proper shift
+choices. Many effective methods for minimizing functions rely upon derivative
+information (e.g. Newton's Method). \textbf{Automatic~Differentiation} (AD)
+methods allow for differentiation of matrix operations \cite{Giles2008} and the
+Schur decomposition itself \cite{Struthers2014}. In this way, AD tools can be
+used to deflate matrices through optimal shift choices.
 
 \end{block}
 
@@ -488,10 +492,11 @@ existing minimization algorithms to create deflatable matrices.
 
 \begin{block}{Conclusions}
 
-We have presented an algorithm which aggresively targets middle deflation as
-opposed to existing algorithms which do not. Furthermore, it does so by
-exploiting AD methods which are highly parallelizable. We are currently
-prototyping this algorithm in \href{http://octave.org/}{GNU Octave}.
+We have presented an algorithm which can aggresively target middle deflation as
+opposed to existing algorithms which do not. The algorithm utilizes AD methods
+which are highly parallelizable. We are currently prototyping this algorithm in
+\href{http://octave.org/}{GNU Octave}. Very efficient implementations are
+possible.
 
 \end{block}
 
@@ -502,8 +507,9 @@ prototyping this algorithm in \href{http://octave.org/}{GNU Octave}.
 \begin{block}{Future Work}
 
 \begin{itemize}
-  \item Characterize performance of the algorithm
-  \item Optimize the algorithm (time, space)
+  \item Characterize performance
+  \item Optimization (time and space)
+  \item Publication
 \end{itemize}
 
 
@@ -530,7 +536,7 @@ prototyping this algorithm in \href{http://octave.org/}{GNU Octave}.
 \begin{block}{Acknowledgements}
 
 The authors thank \textbf{Dr.~Allan~Struthers} (in the Mathematics department)
-for his guidance and creation of AD tools for the Schur decomposition.
+for his guidance and the creation of AD tools for the Schur decomposition.
 
 \end{block}
 
@@ -553,7 +559,7 @@ for his guidance and creation of AD tools for the Schur decomposition.
 
 \begin{center}
 % minimum size is 1 3/4"
-\includegraphics[width=0.5\linewidth]{logo_withfullname_LG.eps}
+\includegraphics[width=0.6\linewidth]{logo_withfullname_LG.eps}
 \end{center}
 
 %----------------------------------------------------------------------------------------
