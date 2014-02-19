@@ -493,8 +493,11 @@ existing minimization algorithms to create deflatable matrices.
 
 We have presented an algorithm which aggresively targets
 middle deflation as opposed to existing algorithms.
-Furthermore, its recursive nature exposes parralizability
-which could lead 
+Furthermore, it does so at the expense of AD methods which
+are highly parallelizable.
+We are currently implementing this algorithm in
+\href{http://octave.org/}{GNU Octave}, in order to
+test the viability of this algorithm.
 
 %With the proper implementation, this will provide a
 %large performance improvement over traditional algorithms in use today.
@@ -522,7 +525,6 @@ which could lead
   \end{itemize}
 \end{itemize}
 
-\href{http://octave.org/}{GNU Octave}.
 
 \end{block}
 
