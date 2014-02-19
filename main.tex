@@ -28,6 +28,7 @@
 \usepackage{pgfplots}
 \usepackage{float}
 \usepackage{onimage}
+\usepackage{etex}
 \usetikzlibrary{arrows}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
@@ -487,10 +488,12 @@ existing minimization algorithms to create deflatable matrices.
 
 \begin{block}{Conclusions}
 
-REWRITE THIS WHOLE SECTION
+We have presented an algorithm which aggresively targets
+middle deflation as opposed to existing algorithms.
+Furthermore, its recursive nature exposes parralizability
+which could lead 
 
-We successfully apply Automatic Differentiation techniques to induce deflations
-in the center of matrices. With the proper implementation, this will provide a
+With the proper implementation, this will provide a
 large performance improvement over traditional algorithms in use today.
 Additionally, this is an enabling technique for extremely large eigenvalue
 %problems. Our preliminary results indicate that a performance gain of XXX can be
@@ -506,7 +509,16 @@ Additionally, this is an enabling technique for extremely large eigenvalue
 
 \begin{block}{Future Work}
 
-The authors are implementing and testing the described techniques in
+\begin{itemize}
+  \item Incorporate AD methods into minimization algorithms
+  \item Characterize the performance of the algorithm
+  \item Optimize performance
+  \begin{itemize}
+    \item Time
+    \item Memory
+  \end{itemize}
+\end{itemize}
+
 \href{http://octave.org/}{GNU Octave}.
 
 \end{block}
@@ -532,7 +544,7 @@ The authors are implementing and testing the described techniques in
 \begin{block}{Acknowledgements}
 
 The authors thank \textbf{Dr.~Allan~Struthers} (in the Mathematics department)
-for his guidance.
+for his guidance and creation of AD tools for the Schur decomposition.
 
 \end{block}
 
