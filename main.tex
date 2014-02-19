@@ -348,6 +348,11 @@ decomposition, and forms spikes.
 \end{tikzonimage} }
 \end{align*}
 %
+This matrix is then reduced to Hessenberg form again.
+If half of the values on the spike are near zero, then
+the Hessenberg form has a zero on the subdiagonal which
+allows for matrix deflation (see above box).
+%
 \end{block}
 
 
@@ -361,51 +366,34 @@ decomposition, and forms spikes.
 %----------------------------------------------------------------------------------------
 %	Automatic Differentiation
 %----------------------------------------------------------------------------------------
-\begin{block}{Automatic Differentiation (AD)}
+\begin{block}{Achieving Deflation}
+
+In practice, middle deflations are improbable because they rely on the spikes
+having many zeros.
+The values on the spike depend on the shifts.
+Since we can control these shifts, the problem of creating
+a middle deflation can be phrased as
 %
-\begin{align*}
-	M_{n+1} = \mathtt{MiddleDeflation}(M, \mathtt{shifts})
-\end{align*}
-%
-AD tools can be applied to compute the sensitivities of the spike tips to the
-shifts.
-%
-\begin{align*}
-	\frac{d M_{n+1}}{d\mathtt{shifts}} = \mathtt{func}(M, \mathtt{shifts})
-\end{align*}
-
-In practice, middle deflations are improbable because they rely on the values
-of the spikes. The spike values depend on the shifts fed to the $Q R$ algorithm. 
-are generated using a Schur decomposition.
-They occur when the spike tips become zero due to change or luck. Inducing shifts
-
-\vspace{0.5ex}
-\begin{figure}
-\begin{tikzpicture}[spy using outlines={circle, magnification=3, connect spies}]
-\node {\includegraphics[width=0.2\linewidth]{plots/bulgesspiked.eps}};
-\spy [ngreen, size=3.5in] on (-0.7,-0.7) in node [left] at (-2in,0);
-\end{tikzpicture}
-\end{figure}
-\vspace{0.5ex}
-
-We apply \textbf{automatic differentiation} (AD) tools to these spikes. AD tools
-allow \emph{algorithms} to be differentiated in the same sense as algebraic
-functions. Classical calculus allows us to linearize a function $f(x)$ at $x=a$ as
-
-\begin{equation*}
-  f(x) \approx f(a) + f'(x) \cdot (x - a)
-\end{equation*}
-
-which solving for the root $(f(x) = 0)$ gives us Newton's method 
-
 \begin{equation}
-x_{n+1} = x_n - \frac{f(x)}{f'(x)}
+  \min_{\textrm{shifts}} \left( \Sigma 
+    \left| \textrm{selected spike values}%I'm not sure if 'selected' is necesary. True, but maybe cluttersome
+  \right| \right)
 \end{equation}
+%
+Minimizing this implies that the spikes have many zeros,
+allowing for middle deflation.
+Selecting a single element and tracing its behavior would cause it to sketch
+out a curve as shown below:
 
-to find the zeros of $f(x)$. \textbf{The technique for finding zeros of the
-spike values is analogus.} Applying AD tools to the Schur decomposition creates
-the gradient with respect to the input values (shifts). When the proper shifts
-are found to induce a zero on the spike, a deflation has been found.
+%ALEX'S FANCY MINIMIZATION CURVE
+
+Many effective methods for minimizing functions rely upon derivatives
+(e.g. Newton's Method).
+\textbf{Automatic differentiation} (AD) methods allow for differentiation 
+of matrix operations \cite{Giles2008} and the schur decomposition \cite{Struthers2014}.
+Thus by using AD tecniques we can utilize existing minimization algorithms to
+create deflatable matrices.
+
 \end{block}
 
 
