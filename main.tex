@@ -35,7 +35,7 @@
 \usetheme{confposter} % Use the confposter theme supplied with this template
 \usepackage{exscale} % fix size of \sum
 
-\setbeamercolor{block title}{fg=ngreen,bg=white} % Colors of the block titles
+\setbeamercolor{block title}{fg=dgreen,bg=white} % Colors of the block titles
 \setbeamercolor{block body}{fg=black,bg=white} % Colors of the body of blocks
 \setbeamercolor{block alerted title}{fg=white,bg=dblue!70} % Colors of the highlighted block titles
 \setbeamercolor{block alerted body}{fg=black,bg=dblue!10} % Colors of the body of highlighted blocks
@@ -87,7 +87,9 @@ rounded corners=0.5ex, anchor=center}}
 
 \title{Finding Eigenvalues using Automatic Differentiation} % Poster title
 
-\author{Alex Hirzel, Peter Solfest, and Ryan Bruner} % Author(s)
+\author{${\text{Alex Hirzel}^\text{\footnotesize (ME-EM)}}$,
+        ${\text{Peter Solfest}^{\text{\footnotesize (Math)}}}$, and
+        ${\text{Ryan Bruner}^\text{\footnotesize (Math)}}$} % Author(s)
 
 \institute{Michigan Technological University} % Institution(s)
 
@@ -373,11 +375,10 @@ center box above).
 %	Automatic Differentiation
 %----------------------------------------------------------------------------------------
 \begin{block}{Achieving Deflation}
-
-Middle deflations are improbable because they rely on the spikes having many
-zeros, and the spike values depend on shift choices. Deflations can be induced
-with proper shift choices. Specifically, the proper shifts can be found by
-solving:
+Middle deflations are unlikely in practice because they rely on the spikes
+having many zeros, and the \textbf{spike values depend on choices of shifts}.
+Deflations can be induced with proper shift choices. Specifically, effective
+shifts can be found by solving:
 %
 \begin{align}
 \min_{\textrm{shifts}} {\Huge \sum}
@@ -418,7 +419,7 @@ choices. Many effective methods for minimizing functions rely upon derivative
 information (e.g. Newton's Method). \textbf{Automatic~Differentiation} (AD)
 methods allow for differentiation of matrix operations \cite{Giles2008} and the
 Schur decomposition itself \cite{Struthers2014}. In this way, AD tools can be
-used to deflate matrices through optimal shift choices.
+used to deflate matrices through \textbf{optimal shift choices}.
 
 \end{block}
 
@@ -492,8 +493,8 @@ used to deflate matrices through optimal shift choices.
 
 \begin{block}{Conclusions}
 
-We have presented an algorithm which can aggresively target middle deflation as
-opposed to existing algorithms which do not. The algorithm utilizes AD methods
+We have presented an algorithm which can aggresively target middle deflation (as
+opposed to existing algorithms which do not). The algorithm utilizes AD methods
 which are highly parallelizable. We are currently prototyping this algorithm in
 \href{http://octave.org/}{GNU Octave}. Very efficient implementations are
 possible.
@@ -549,11 +550,12 @@ for his guidance and the creation of AD tools for the Schur decomposition.
 
 \begin{block}{Contact Information}
 
-\begin{itemize}
-%\item Web: \href{http://www.university.edu/smithlab}{http://www.university.edu/smithlab}
-\item Email: \href{mailto:ahirzel@mtu.edu}{\texttt{ahirzel@mtu.edu}}
-\item Phone: +1 (906) 231 0866
-\end{itemize}
+\begin{table}
+\begin{tabular}{r@{:\ }l}
+Email & \href{mailto:ahirzel@mtu.edu}{\texttt{ahirzel@mtu.edu}} \\
+Phone & +1 (906) 231 0866
+\end{tabular}
+\end{table}
 
 \end{block}
 
