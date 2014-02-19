@@ -329,7 +329,6 @@ Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$:
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Az.eps}
 \node[MyCaption] at (0.5, 1) {$A_\text{sub}$};
 \end{tikzonimage} }
-\vpointer
 \!\!\vpointer\!\!
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Qz.eps}
 \node[MyCaption] at (0.5, 1) {$Q_\text{sub}$};
@@ -340,8 +339,8 @@ Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$:
 \end{tikzonimage} }
 \end{align*}
 %
-We can then create $Q$ by embedding  $Q_\text{sub}$ into the identity.
-Applying this to $A$ creates zeros on the subdiagonal in the neighborhood of the
+We can then create $Q$ by embedding $Q_\text{sub}$ into the identity. Applying
+this to $A$ creates zeros on the subdiagonal in the neighborhood of the
 decomposition, and forms spikes.
 %
 \begin{align*}
@@ -492,21 +491,10 @@ existing minimization algorithms to create deflatable matrices.
 
 \begin{block}{Conclusions}
 
-We have presented an algorithm which aggresively targets
-middle deflation as opposed to existing algorithms.
-Furthermore, it does so at the expense of AD methods which
-are highly parallelizable.
-We are currently implementing this algorithm in
-\href{http://octave.org/}{GNU Octave}, in order to
-test the viability of this algorithm.
-
-%With the proper implementation, this will provide a
-%large performance improvement over traditional algorithms in use today.
-%Additionally, this is an enabling technique for extremely large eigenvalue
-%problems. Our preliminary results indicate that a performance gain of XXX can be
-%expected from proper implementations of this technique. This was determined by
-%naively implementing each algorithm in MATLAB and comparing FLOP counts using
-%each algorithm for the same inputs.
+We have presented an algorithm which aggresively targets middle deflation as
+opposed to existing algorithms. Furthermore, it does so by exploiting AD
+methods which are highly parallelizable. We are currently prototyping this
+algorithm in \href{http://octave.org/}{GNU Octave}.
 
 \end{block}
 
@@ -517,13 +505,8 @@ test the viability of this algorithm.
 \begin{block}{Future Work}
 
 \begin{itemize}
-  \item Incorporate AD methods into minimization algorithms
-  \item Characterize the performance of the algorithm
-  \item Optimize performance
-  \begin{itemize}
-    \item Time
-    \item Memory
-  \end{itemize}
+  \item Characterize performance of the algorithm
+  \item Optimize the algorithm (time, space)
 \end{itemize}
 
 
