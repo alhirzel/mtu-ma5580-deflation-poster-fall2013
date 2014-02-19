@@ -183,12 +183,12 @@ similarity transformations.
 \end{tikzonimage} }
 \end{align*}
 %
-A \emph{bulge} is repeatedly \textbf{chased down diagonally}. To speed
+A \emph{bulge} is repeatedly \textbf{chased down the diagonal}. To speed
 convergence \cite{watkins2007matrix}, the bulge is seeded with one or more
 \emph{shifts}, which represent \textbf{parameter choices}.
 % XXX SEPARATE
 A second bulge can be
-started from the bottom, and the two can meet in the imddle right.  A
+started from the bottom, and the two can meet in the middle.  A
 \textbf{Schur decomposition is used to form \emph{spikes}} around this bulge.
 Under the right conditions, the problem can be subdivided recursively into the
 top-left and bottom-right quarters. This is shown below.
@@ -266,7 +266,7 @@ simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
 % position this absolutely on the page (ick)
 \begin{tikzpicture}[remember picture, overlay]
 \node [shift={(-30.5in,-13.5in)}, align=center, anchor=center] at (current page.north east) {
-	\Large            \textbf{Recursion is a} \\[1.5ex]
+	\Large            \textbf{Subdivision is a} \\[1.5ex]
 	\huge \color{red} \textbf{HUGE} \\[0.25ex]
 	\Large            \textbf{performance win.}
 };
@@ -284,13 +284,16 @@ simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
 %----------------------------------------------------------------------------------------
 \begin{block}{Schur Decomposition}
 %
+%
+The Schur decomposition allows us to create spikes. For an input matrix $A$, it
+forms symmetric $Q$ and diagonal $T$ such that \textbf{$\mathbf{Q}$ diagonalizes
+$\mathbf{A}$ into $\mathbf{T}$}, as 
+%
 \begin{align}
 A = Q^\intercal T Q %\quad \therefore Q A Q^\intercal = T
 \end{align}
 %
-The Schur decomposition allows us to create spikes. For an input matrix $A$, it
-forms symmetric $Q$ and diagonal $T$ such that \textbf{$\mathbf{Q}$ diagonalizes
-$\mathbf{A}$ into $\mathbf{T}$}. Consider a submatrix $A_\text{sub}$ and compute
+Consider a submatrix $A_\text{sub}$ and compute
 $Q_\text{sub}$:
 %
 \begin{align*}
@@ -307,9 +310,9 @@ $Q_\text{sub}$:
 \end{tikzonimage} }
 \end{align*}
 %
-We can then embed $Q_\text{sub}$ into $Q$ and apply it to $A$. In the
-neighborhood of the decomposition, the subdiagonal of $A$ is zeroed and the
-spikes form.
+We can then create $Q$ by embedding  $Q_\text{sub}$ into the identity.
+Applying this to $A$ creates zeros on the subdiagonal in the neighborhood of the
+decomposition, and forms spikes.
 %
 \begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Ahess.eps}
