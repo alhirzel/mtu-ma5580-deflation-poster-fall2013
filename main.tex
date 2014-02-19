@@ -98,8 +98,8 @@ rounded corners=0.5ex, anchor=center}}
 \addtobeamertemplate{block end}{}{\vspace*{2ex}} % White space under blocks
 \addtobeamertemplate{block alerted end}{}{\vspace*{2ex}} % White space under highlighted (alert) blocks
 
-\setlength{\belowcaptionskip}{2ex} % White space under figures
-\setlength\belowdisplayshortskip{2ex} % White space under equations
+%\setlength{\belowcaptionskip}{2ex} % White space under figures
+%\setlength\belowdisplayshortskip{2ex} % White space under equations
 
 \begin{frame}[t] % The whole poster is enclosed in one beamer frame
 
@@ -133,9 +133,9 @@ apply automatic differentiation tools to achieve frequent deflations.
 %
 A general matrix is first reduced to Hessenberg~form, then the $\mathbf{Q}
 \mathbf{R}$~\textbf{algorithm} is used to reduce the sub-diagonal entries to
-zero iteratively:%
+zero iteratively:
 %
-\begin{align*}
+\vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/original.eps}
 \node[MyCaption] at (0.5, 1) {0 iter};
 \end{tikzonimage} }
@@ -157,11 +157,10 @@ zero iteratively:%
 \node[MyCaption] at (0.5, 1) {$\cdots$};
 \end{tikzonimage} }
 \end{align*}
-%\vspace{0.5ex}
 %
-Since the resulting matrix is strictly upper triangular, \textbf{the eigenvalues
-are the diagonal entries}. The $Q R$~algorithm consists of repeated iterations
-of:
+\newline\noindent{}Since the resulting matrix is strictly upper triangular, \textbf{the
+eigenvalues are the diagonal entries}. The $Q R$~algorithm consists of repeated
+iterations of:
 %
 \begin{align}
 A_n     &\rightarrow Q_n R_n \label{eq:qr} \\
@@ -172,7 +171,7 @@ As written, \eqref{eq:qr} and \eqref{eq:rq} require multiplication of large
 matrices. For this reason, the $Q R$~algorithm is implemented as a loop of
 similarity transformations.
 %
-\begin{align*}
+\vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulge1.eps}
 \end{tikzonimage} }
 \!\!\vpointer\!\!
@@ -188,7 +187,7 @@ similarity transformations.
 \end{tikzonimage} }
 \end{align*}
 %
-A \emph{bulge} is \textbf{chased down the diagonal}. To speed convergence
+\newline\noindent{}\textbf{A \emph{bulge} is chased down the diagonal}. To speed convergence
 \cite{watkins2007matrix}, the bulge is seeded with one or more \emph{shifts},
 which represent \textbf{parameter choices}.
 % XXX SEPARATE
@@ -198,7 +197,7 @@ started from the bottom, and the two can meet in the middle.  A
 Under the right conditions, the problem can be subdivided recursively into the
 top-left and bottom-right quarters. This is shown below.
 %
-\begin{align*}
+\vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.2\linewidth]{plots/bulges1.eps}
 \end{tikzonimage} }
 \!\!\vpointer\!\!
@@ -225,9 +224,6 @@ top-left and bottom-right quarters. This is shown below.
 %	Proposed Techniques: Inducing Middle Deflations
 %----------------------------------------------------------------------------------------
 \begin{alertblock}{Proposed Technique: Inducing Recursive Middle Deflation}
-%We expect middle deflation to be possible by chasing bulges from both corners
-%simultaneously: \cite{BramanThesis} \cite{WatkinsBulgeExchanges}
-%\cite{Giles2008} \cite{Struthers2014}
 %
 \begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.16\linewidth]{plots2/impstep002.eps} \end{tikzonimage} }
@@ -326,7 +322,7 @@ A = Q^\intercal T Q %\quad \therefore Q A Q^\intercal = T
 %
 Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$:
 %
-\begin{align*}
+\vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Az.eps}
 \node[MyCaption] at (0.5, 1) {$A_\text{sub}$};
 \end{tikzonimage} }
@@ -340,11 +336,11 @@ Consider a submatrix $A_\text{sub}$ and compute $Q_\text{sub}$:
 \end{tikzonimage} }
 \end{align*}
 %
-We can then create $Q$ by embedding $Q_\text{sub}$ into the identity. Applying
+\newline\noindent{}We can then create $Q$ by embedding $Q_\text{sub}$ into the identity. Applying
 this to $A$ creates zeros on the subdiagonal in the neighborhood of the
 decomposition, and forms spikes.
 %
-\begin{align*}
+\vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.28\linewidth]{plots/schur_Ahess.eps}
 \node[MyCaption] at (0.5, 1) {$A$};
 \end{tikzonimage} }
@@ -358,7 +354,7 @@ decomposition, and forms spikes.
 \end{tikzonimage} }
 \end{align*}
 %
-This matrix is then reduced to Hessenberg form again. If half of the values on
+\newline\noindent{}This matrix is then reduced to Hessenberg form again. If half of the values on
 the spike are near zero, then the Hessenberg form has a zero on the subdiagonal
 which allows for matrix deflation (see above box).
 %
@@ -393,7 +389,7 @@ Minimizing this implies that the spikes have many zeros, allowing for middle
 deflation. Selecting a single spike element and tracing its value would cause
 it to sketch out a curve as shown below:
 %
-\begin{align*}
+\vspace{0.25ex}\begin{align*}
 \vimage{ \begin{tikzonimage}[width=0.40\linewidth]{plots2/impstep009.eps}
 		\draw[red, ultra thick] (0.325, 0.375) circle (1ex) node[left=0.5em,
 		rounded corners, white, fill=black, opacity=0.95, text opacity=1.0] {$x$};
@@ -414,7 +410,7 @@ it to sketch out a curve as shown below:
 \end{tikzpicture} }
 \end{align*}
 %
-Many effective methods for minimizing functions rely upon derivative information
+\newline\noindent{}Many effective methods for minimizing functions rely upon derivative information
 (e.g. Newton's Method). \textbf{Automatic~Differentiation} (AD) methods allow
 for differentiation of matrix operations \cite{Giles2008} and the Schur
 decomposition \cite{Struthers2014}. Thus by using AD techniques we can utilize
